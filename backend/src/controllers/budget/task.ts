@@ -7,11 +7,14 @@ import Task from "@/db/schema/Task";
 import { z } from "zod";
 
 export const createTask = async (req: AuthenticatedRequest, res: Response) => {
-  const validatedData = taskSchema.parse(taskSchema);
+  console.log(req.body);
+
+  const validatedData = taskSchema.parse(req.body);
 
   const user = req.user;
+
   if (!user) {
-    return res.status(400).send({ message: "user is not" });
+    return res.status(400).send({ message: "user is not " });
   }
 
   try {
@@ -21,7 +24,7 @@ export const createTask = async (req: AuthenticatedRequest, res: Response) => {
     });
     const savedTask = await newTask.save();
 
-    Logger.error("Task created succesfully");
+    Logger.silly("Task created succesfully");
     res.status(201).json({ message: "Task created succesfully", savedTask });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -80,15 +83,18 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const deleteTask = async (req: AuthenticatedRequest, res: Response)=> {
+export const deleteTask = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const deletedTask = await Task.findOneAndDelete({ _id: req.params.id, user: req.user });
+    const deletedTask = await Task.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user,
+    });
     if (!deletedTask) {
-      return res.status(404).json({ message: 'Task not found' });
+      return res.status(404).json({ message: "Task not found" });
     }
-    res.json({ message: 'Task deleted successfully' });
+    res.json({ message: "Task deleted successfully" });
   } catch (error) {
-    Logger.error('Error in deleteTask:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    Logger.error("Error in deleteTask:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -18,8 +18,10 @@ export const refreshTokenSchema = z.object({
 export const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  status: z.enum(["todo", "in-progress", "done"]).default("todo"),
-  dueDate: z.string().optional(),
+  status: z
+    .enum(["To Do", "In Progress", "Under Review", "Completed"])
+    .default("To Do"),
+  deadline: z.coerce.string().transform(Date).optional(),
   priority: z.string().optional(),
 });
 export const updateTaskSchema = taskSchema.partial();

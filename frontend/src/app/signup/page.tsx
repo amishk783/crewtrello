@@ -10,6 +10,8 @@ import { Eye, Loader } from "lucide-react";
 import toast from "react-hot-toast";
 import Button from "../_components/Button";
 import Link from "next/link";
+import { useAuth } from "../providers/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   name: z.string().min(1, "Name cannot be empty"),
@@ -29,24 +31,28 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
+  const { signUp } = useAuth();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [viewPassword, setViewPassword] = useState<boolean>(false);
 
   const onSubmit = async (formDetails: FormData) => {
     event?.preventDefault();
-    const { email, password } = formDetails;
+    const { email, password, name } = formDetails;
     setLoading(true);
-
     try {
+      await signUp(name, email, password);
+
+      router.push("/home");
       toast("Welcome Aboard!", {
         className: " text-green-300",
       });
     } catch (error) {
       console.log(error);
+      toast.error("Sign up failed. Please try again.");
     }
     setLoading(false);
   };

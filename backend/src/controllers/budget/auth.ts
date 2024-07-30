@@ -14,6 +14,9 @@ import { z } from "zod";
 
 export const registerController = async (req: Request, res: Response) => {
   try {
+    console.log(req.body);
+    const { email } = req.body;
+    console.log(email);
     const validatedData = registerSchema.parse(req.body);
 
     const exisitngUser = await User.findOne({ email: validatedData.email });
@@ -50,7 +53,7 @@ export const registerController = async (req: Request, res: Response) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       Logger.error("Validation error in singup:", error.errors);
-      res.status(400).json({ errors: error.errors });
+      res.status(400).json({ errors: error.errors, message: error.message });
     } else {
       Logger.error("Error in login:", error);
       res.status(500).json({ message: "Internal server error" });

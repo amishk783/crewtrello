@@ -2,14 +2,16 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { cn } from "@/app/_utils";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import Link from "next/link";
 
 import { Input } from "@/app/_components/Input";
-import { useState } from "react";
+import { cn } from "@/app/_utils";
 import { Eye, Loader } from "lucide-react";
-import toast from "react-hot-toast";
 import Button from "../_components/Button";
-import Link from "next/link";
+import { useAuth } from "../providers/AuthProvider";
 
 const schema = z.object({
   email: z
@@ -32,16 +34,19 @@ const Login = () => {
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
+  const { logIn } = useAuth();
   const [loading, setLoading] = useState(false);
   const [viewPassword, setViewPassword] = useState<boolean>(false);
-
+  const router = useRouter();
   const onSubmit = async (formDetails: FormData) => {
     event?.preventDefault();
     const { email, password } = formDetails;
     setLoading(true);
 
     try {
-      toast("Welcome Aboard!", {
+      await logIn(email, password);
+      router.push("/home");
+      toast("Hey, Missed You!", {
         className: " text-green-300",
       });
     } catch (error) {

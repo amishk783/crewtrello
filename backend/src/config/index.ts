@@ -19,7 +19,7 @@ interface ServerConfig {
 
 const config: ServerConfig = {
   nodeEnv: process.env.NODE_ENV || "development",
-  port: parseInt(process.env.PORT || "3000") || 3000,
+  port: parseInt(process.env.PORT || "3000"),
   databaseURL: process.env.DATABASE_URI || "",
   apiBasePath: process.env.API_BASE_PATH || "/api",
   accessTokenSecret: process.env.ACCESS_TOKEN_SECRET || "",

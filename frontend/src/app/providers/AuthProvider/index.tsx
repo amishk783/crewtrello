@@ -1,19 +1,10 @@
-"use client"
-import React, { ReactNode, useState } from "react";
+"use client";
+import React, { ReactNode, useContext, useEffect, useState } from "react";
 import { createContext } from "react";
 import axios from "axios";
-import api from "../_utils/api/axios";
+import api from "../../_utils/api/axios";
+import { Session, User } from "./type";
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-}
-
-interface Session {
-  accessToken: string;
-  refreshToken: string;
-}
 
 interface AuthContextProps {
   user?: User | null;
@@ -40,10 +31,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    checkSession();
+  }, []);
+  useEffect(() => {
+    if (session) {
+      api.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${session.accessToken}`;
+    } else {
+      delete api.defaults.headers.common["Authorization"];
+    }
+  }, [session]);
+
+  const checkSession = async () => {
+    try {
+      const savedSession = localStorage.getItem("session");
+      const savedUser = localStorage.getItem("user");
+      if (savedSession && savedUser) {
+        const parsedSession = JSON.parse(savedSession);
+        const parsedUser = JSON.parse(savedUser);
+        console.log("parsedSession", parsedSession);
+        setSession(parsedSession);
+
+        setUser(parsedUser);
+      }
+    } catch (error) {
+      console.error("Session check failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logIn = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const response = await api.post("api/auth/login", { email, password });
+      const response = await api.post("/auth/login", { email, password });
 
       setUser(response.data.user);
       setSession(response.data.session);
@@ -58,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const signUp = async (username: string, email: string, password: string) => {
     try {
       setLoading(true);
-      const response = await api.post("api/auth/signup", {
+      const response = await api.post("/auth/register", {
         username,
         email,
         password,
@@ -77,7 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       setLoading(true);
       const session = localStorage.getItem("session");
-      const response = await api.post("api/auth/logout", { session });
+      const response = await api.post("/auth/logout", { session });
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
@@ -95,4 +118,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       {children}
     </AuthContext.Provider>
   );
+};
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useTask must be used within a ColumnProvider");
+  }
+  return context;
 };

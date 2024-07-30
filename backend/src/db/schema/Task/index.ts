@@ -4,8 +4,8 @@ const { Schema, model } = mongoose;
 const taskSchema = new Schema({
   status: {
     type: String,
-    enum: ["todo", "progress", "review", "completed"],
-    default: "pending",
+    enum: ["To Do", "In Progress", "Under Review", "Completed"],
+    default: "To Do",
     required: true,
   },
   title: {
@@ -16,15 +16,16 @@ const taskSchema = new Schema({
   description: {
     type: String,
     trim: true,
+    required: false,
   },
   priority: {
     type: String,
-    enum: ["low", "medium", "high"],
-    default: "medium",
+    enum: ["Low", "Medium", "Urgent"],
+    required: false,
   },
   deadline: {
     type: Date,
-    required: true,
+    required: false,
   },
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   createdAt: {

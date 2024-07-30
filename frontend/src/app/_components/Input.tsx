@@ -31,9 +31,9 @@ export const Input: React.FC<Props> = ({
     <div className="w-full">
       <input
         className={cn(
-          className,
           error ? "bg-red-50 border-red-200 border-2" : "bg-zinc-200",
-          "w-full h-1 py-7 px-4 focus:outline-none focus:border-0 focus:bg-blue-100 shadow-sm  rounded-md "
+          "w-full h-1 py-7 px-4 focus:outline-none focus:border-0  focus:bg-blue-100 shadow-sm  rounded-md ",
+          className
         )}
         placeholder={placeholder}
         {...{ type }}
