@@ -45,7 +45,7 @@ const Login = () => {
 
     try {
       await logIn(email, password);
-      router.push("/home");
+      router.push("/");
       toast("Hey, Missed You!", {
         className: " text-green-300",
       });

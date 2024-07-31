@@ -46,7 +46,7 @@ const Login = () => {
     try {
       await signUp(name, email, password);
 
-      router.push("/home");
+      router.push("/");
       toast("Welcome Aboard!", {
         className: " text-green-300",
       });
