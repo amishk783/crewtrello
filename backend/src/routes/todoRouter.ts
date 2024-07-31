@@ -6,7 +6,7 @@ import {
   getTaskById,
   updateTask,
   deleteTask,
-} from "@/controllers/budget/task";
+} from "@/controllers/board/task";
 const router = express.Router();
 
 router.post("/", createTask);

@@ -14,10 +14,13 @@ import { ColumnProvider, useTask } from "./providers/TaskProvider";
 import Kanbanboard from "./_components/Kanbanboard";
 import { useAuth } from "./providers/AuthProvider";
 import { useRouter } from "next/navigation";
+import { Calendar } from "./_components/CreateTask/Calendar";
 
 const Home = () => {
   const [openCreateTask, setOpenCreateTask] = useState<boolean>(false);
   const [colStatus, setColStatus] = useState<string>("");
+
+  const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const router = useRouter();
   const handleTaskForm = (status: string) => {
     setColStatus(status);
@@ -28,10 +31,6 @@ const Home = () => {
   };
 
   const { user, session } = useAuth();
-
-  if (!session) {
-    router.push("/login");
-  }
 
   const userFirstName = user?.username.split(" ")[0];
   return (
@@ -82,15 +81,25 @@ const Home = () => {
               />
             </div>
             <div className="flex items-center gap-6 text-primary">
-              <div className="flex items-center gap-4">
-                <h2 className="text-base ">Calender view</h2>
-                <Image
-                  src="/framecalender.png"
-                  alt="calender icon"
-                  width={24}
-                  height={24}
-                />
+              <div className="relative flex flex-col items-start">
+                <Button
+                  variant="ghost"
+                  className="p-0 flex items-center gap-4"
+                  onClick={() => setOpenCalendar((prev) => !prev)}
+                >
+                  <h2 className="text-base ">Calender view</h2>
+                  <Image
+                    src="/framecalender.png"
+                    alt="calender icon"
+                    width={24}
+                    height={24}
+                  />
+                </Button>
+                {openCalendar && (
+                  <Calendar className="absolute flex flex-col items-center  rounded-lg  w-80 z-50 mt-5  bg-white left-[-50%]" />
+                )}
               </div>
+
               <div className="flex items-center gap-2 font-inter">
                 <h2 className="text-base ">Autmation</h2>
                 <Image

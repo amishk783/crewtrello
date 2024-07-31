@@ -85,17 +85,25 @@ export const Task: React.FC<TaskProps> = (task) => {
       onDragStart={onDragStart}
       draggable
       className={cn(
-        "w-full font-inter rounded-md bg-[#F9F9F9] border-2 transition-all duration-300 ease-out "
+        "w-full font-inter group rounded-md bg-[#F9F9F9] border-2 transition-all duration-300 ease-out "
       )}
     >
       <div className="flex flex-col gap-2 p-2">
-        <div className="flex justify-between items-center">
-          <h1 className="text-primary text-2xl">{task.title}</h1>
-          <div className="flex mr-1 gap-2">
-            <Button onClick={handleOpenEdit} variant="ghost" className="p-0">
-              <Pen size={20} className="text-primary" />
+        <div className="flex justify-between items-center overflow-hidden">
+          <h1 className="text-primary text-2xl overflow-x-auto">{task.title}</h1>
+          <div className="flex mr-1 gap-2 invisible transition  ease-in-out delay-300 group-hover:visible">
+            <Button
+              onClick={handleOpenEdit}
+              variant="ghost"
+              className="p-0 hover:scale-[110%] transition ease-in delay-75"
+            >
+              <Pen size={20} className="text-primary " />
             </Button>
-            <Button onClick={handleDelete} variant="ghost" className="p-0">
+            <Button
+              onClick={handleDelete}
+              variant="ghost"
+              className="p-0 hover:scale-[110%] transition ease-in delay-75"
+            >
               <CircleX className=" stroke-red-400" />
             </Button>
           </div>

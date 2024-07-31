@@ -10,10 +10,10 @@ import { Selector } from "./CreateTask/Selector";
 import { useTask } from "@/app/providers/TaskProvider";
 
 import { Plus } from "lucide-react";
-import { ExtendedFormData, Option } from "./CreateTask/type";
+import { Option } from "./CreateTask/type";
 import { priorityOption, statusOption } from "./CreateTask/constant";
 import { TaskProps } from "./Task";
-import { useDnD } from "../providers/DndProvider";
+
 import toast from "react-hot-toast";
 
 const schema = z.object({

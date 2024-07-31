@@ -4,8 +4,6 @@ const { Schema, model } = mongoose;
 const taskSchema = new Schema({
   status: {
     type: String,
-    enum: ["To Do", "In Progress", "Under Review", "Completed"],
-    default: "To Do",
     required: true,
   },
   title: {
@@ -27,7 +25,8 @@ const taskSchema = new Schema({
     type: Date,
     required: false,
   },
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  list_id: { type: Schema.Types.ObjectId, ref: "List" },
+  user_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
   createdAt: {
     type: Date,
     default: Date.now,

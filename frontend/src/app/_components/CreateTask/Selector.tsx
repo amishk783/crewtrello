@@ -30,7 +30,7 @@ export const Selector = forwardRef(
       }
       return options[0] || null;
     });
-    console.log("default", selectedOption);
+
     const [query, setQuery] = useState(defaultVal);
 
     const filteredOptions =

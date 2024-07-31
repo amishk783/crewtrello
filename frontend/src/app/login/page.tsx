@@ -62,10 +62,10 @@ const Login = () => {
     setViewPassword((prevState) => !prevState);
   };
   return (
-    <div className=" h-screen bg-red-50 md:pt-10  md:bg-white bg-gradient-to-t from-violet-400 via-violet-200 to-purple-100 text-black">
-      <div className="w-[80%] h-[468px] mt-10 rounded-lg xl:w-[35%] xl:mx-auto bg-white">
-        <div className="flex flex-col items-center justify-center px-8 w-full h-full">
-          <h2 className="text-5xl font-semibold mb-8 text-center">
+    <div className="flex justify-center w-full h-screen bg-red-500 pt-10 bg-gradient-to-t from-violet-400 via-violet-200 to-purple-100 text-black">
+      <div className="flex items-baseline align-middle mt-20 justify-center w-[90%] rounded-lg xl:w-[35%] xl:mx-auto">
+        <div className="flex flex-col  align-middle bg-white px-8 py-6 sm:py-10 rounded-xl">
+          <h2 className=" text-3xl md:text-5xl font-semibold mb-8 text-center">
             Welcome to <span className=" text-violet-900">Workflo!</span>
           </h2>
 
@@ -113,12 +113,10 @@ const Login = () => {
               {loading ? <Loader className=" animate-spin" /> : ""}
             </Button>
           </form>
-          <div className="flex py-4 items-center justify-center text-xl text-zinc-600">
-            <h2>Dont have an account? Create a</h2>
-            <Link href="/signup">
-              <Button variant="ghost" className="text-blue-600 pl-2">
-                new account
-              </Button>
+          <div className="flex flex-col md:flex-row py-4 gap-2 items-center justify-center text-xl text-zinc-600">
+            <h2>Dont have an account?</h2>
+            <Link className="flex items-center p-0" href="/signup">
+              Create a<p className="text-blue-600 pl-2 ">new account</p>
             </Link>
           </div>
         </div>

@@ -1,13 +1,13 @@
 import React, { Suspense, useCallback, useState } from "react";
 import Image from "next/image";
-import { Task, TaskProps } from "./Task";
-import Button from "./Button";
-import { Loader, Plus } from "lucide-react";
-import { useTask } from "../providers/TaskProvider";
-import { ColumnStatus } from "../providers/TaskProvider/type"; // Import the ColumnStatus type
-import SkeletonTask from "./SkeletonTask";
+import { debounce } from "lodash";
+
 import { useDnD } from "../providers/DndProvider";
+import { ColumnStatus } from "../providers/TaskProvider/type"; // Import the ColumnStatus type
+import Button from "./Button";
+import { Task, TaskProps } from "./Task";
 import { cn } from "../_utils";
+import { Plus } from "lucide-react";
 
 interface ColumnType {
   tasks: TaskProps[];
@@ -25,6 +25,7 @@ export const Column: React.FC<ColumnType> = ({
   const onDragOver = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
+      console.log();
       handleDragOver(e, title as ColumnStatus);
     },
     [handleDragOver, title]
@@ -40,7 +41,7 @@ export const Column: React.FC<ColumnType> = ({
 
   return (
     <div
-      className={cn("mx-4 my-2  w-full")}
+      className={cn("mx-4 my-2  w-full h-full")}
       onDragOver={onDragOver}
       onDragLeave={handleDragLeave}
       onDrop={onDrop}

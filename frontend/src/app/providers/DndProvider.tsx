@@ -4,6 +4,7 @@ import { useTask } from "./TaskProvider";
 import { ColumnStatus } from "./TaskProvider/type";
 import api from "../_utils/api/axios";
 import { DndContext } from "@dnd-kit/core";
+import { debounce } from "lodash";
 
 interface DnDContextType {
   isDragging: boolean;
@@ -26,7 +27,6 @@ export const DnDProvider: React.FC<{ children: React.ReactNode }> = ({
     useState<ColumnStatus | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const handleDragStart = (e: React.DragEvent, task: TaskProps) => {
-    console.log(task._id);
     setIsDragging(true);
     e.dataTransfer.setData("taskId", task._id);
     if (e.target instanceof HTMLElement) {
@@ -42,6 +42,13 @@ export const DnDProvider: React.FC<{ children: React.ReactNode }> = ({
     setDraggedOverColumn(null);
   };
 
+  const debouncedUpdateTask = debounce(async (taskId, updatedTask) => {
+    try {
+      await api.put(`/task/${taskId}`, updatedTask);
+    } catch (error) {
+      console.error("Error moving task:", error);
+    }
+  }, 3600);
   const handleDrop = async (
     e: React.DragEvent,
     containerStatus: ColumnStatus
@@ -57,7 +64,7 @@ export const DnDProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         setLoading(true);
         const updatedTask = { ...task, status: containerStatus };
-        await api.put(`/task/${taskId}`, updatedTask);
+       
         setColumns(
           columns.map((column) => ({
             ...column,
@@ -67,6 +74,7 @@ export const DnDProvider: React.FC<{ children: React.ReactNode }> = ({
                 : column.tasks.filter((t) => t._id !== taskId),
           }))
         );
+        debouncedUpdateTask(taskId, updatedTask);
       } catch (error) {
         console.error("Error moving task:", error);
       } finally {

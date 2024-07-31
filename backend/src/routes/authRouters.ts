@@ -4,7 +4,7 @@ import {
   loginController,
   refreshTokenController,
   registerController,
-} from "@/controllers/budget/auth";
+} from "@/controllers/auth";
 const router = express.Router();
 
 router.post("/register", registerController); // register the user

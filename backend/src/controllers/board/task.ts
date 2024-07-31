@@ -7,19 +7,16 @@ import Task from "@/db/schema/Task";
 import { z } from "zod";
 
 export const createTask = async (req: AuthenticatedRequest, res: Response) => {
-  console.log(req.body);
   const validatedData = taskSchema.parse(req.body);
 
   const user = req.user;
-
-  if (!user) {
-    return res.status(400).send({ message: "user is not " });
-  }
+  console.log(validatedData.listId);
 
   try {
     const newTask = new Task({
       ...validatedData,
-      user: user as string,
+      list_id: validatedData.listId,
+      user_id: user as string,
     });
     const savedTask = await newTask.save();
 
@@ -35,8 +32,10 @@ export const createTask = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 export const getAllTasks = async (req: AuthenticatedRequest, res: Response) => {
+  const { listId } = req.body;
   try {
-    const tasks = await Task.find({ user: req.user });
+    const tasks = await Task.find({ user_id: req.user, list_id: listId });
+    console.log("🚀 ~ getAllTasks ~ tasks:", tasks)
     res.json(tasks);
   } catch (error) {
     Logger.error("Error in getAllTasks:", error);
@@ -47,7 +46,7 @@ export const getAllTasks = async (req: AuthenticatedRequest, res: Response) => {
 export const getTaskById = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const task = await Task.findOne({ _id: id, user: req.user });
+    const task = await Task.findOne({ _id: id, user_id: req.user });
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
@@ -64,11 +63,11 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response) => {
     const validateData = updateTaskSchema.parse(req.body);
 
     const updatedTask = await Task.findOneAndUpdate(
-      { _id: id, user: req.user },
+      { _id: id, user_id: req.user },
       validateData,
       { new: true, runValidators: true }
     );
-    if (!updateTask) {
+    if (!updatedTask) {
       return res.status(404).json({ message: "Task not found" });
     }
     res.json(updatedTask);
@@ -86,7 +85,7 @@ export const deleteTask = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const deletedTask = await Task.findOneAndDelete({
       _id: req.params.id,
-      user: req.user,
+      user_id: req.user,
     });
     if (!deletedTask) {
       return res.status(404).json({ message: "Task not found" });

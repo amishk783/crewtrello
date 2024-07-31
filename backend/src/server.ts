@@ -12,7 +12,9 @@ const app = express();
 
 import { todoRouter } from "./routes/todoRouter";
 import { authRouter } from "./routes/authRouters";
+import { boardRouter } from "./routes/boardRouter";
 import { main } from "./db";
+import { listRouter } from "./routes/listRouter";
 
 if (config.nodeEnv === "production") {
   app.use(helmet());
@@ -30,6 +32,8 @@ if (config.nodeEnv !== "test") {
 
 app.use("/auth", authRouter);
 app.use("/task", verifyUser, todoRouter);
+app.use("/board", verifyUser, boardRouter);
+app.use("/list", verifyUser, listRouter);
 
 app.listen(config.port, () => {
   main().catch((error) => error);
