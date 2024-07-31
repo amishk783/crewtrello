@@ -48,7 +48,7 @@ export const ColumnProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       setLoading(true);
       const accessToken = session ? session.accessToken : "";
-      console.log(accessToken);
+
       const response = await api.get("/task/", {
         headers: {
           authorization: `Bearer ${accessToken}`,
@@ -63,7 +63,6 @@ export const ColumnProvider: React.FC<{ children: React.ReactNode }> = ({
           tasks: tasks.filter((task) => task.status === column.status),
         }))
       );
-      console.log("after", columns);
     } catch (error) {
       console.error("Error fetching tasks:", error);
     } finally {
@@ -74,9 +73,9 @@ export const ColumnProvider: React.FC<{ children: React.ReactNode }> = ({
   const handleAddTask = async (data: ExtendedFormData) => {
     try {
       setLoading(true);
-      console.log(data);
+
       let { title, status, description, priority, deadline } = data;
-      console.log("🚀 ~ handleAddTask ~ deadline:", deadline);
+
       const payload = {
         title,
         status,
@@ -84,8 +83,7 @@ export const ColumnProvider: React.FC<{ children: React.ReactNode }> = ({
         ...(priority && { priority }),
         ...(deadline && { deadline }),
       };
-      console.log(payload);
-      console.log("🚀 ~ handleAddTask ~ deadline:", deadline);
+
       const response = await api.post("/task/", payload);
 
       const newTask: TaskProps = response.data.savedTask;

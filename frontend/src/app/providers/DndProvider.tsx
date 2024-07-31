@@ -26,7 +26,6 @@ export const DnDProvider: React.FC<{ children: React.ReactNode }> = ({
     useState<ColumnStatus | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const handleDragStart = (e: React.DragEvent, task: TaskProps) => {
-    console.log(task._id);
     setIsDragging(true);
     e.dataTransfer.setData("taskId", task._id);
     if (e.target instanceof HTMLElement) {
