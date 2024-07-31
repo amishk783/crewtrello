@@ -13,20 +13,17 @@ import api from "../../_utils/api/axios";
 import { ColumnStatus, ColumnType } from "./type";
 import { ExtendedFormData } from "@/app/_components/CreateTask/type";
 import { useAuth } from "../AuthProvider";
+import { DragEndEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 
 interface ColumnContextType {
   columns: ColumnType[];
 
   loading: boolean;
+  setColumns: React.Dispatch<React.SetStateAction<ColumnType[]>>;
   handleAddTask: (formData: ExtendedFormData) => Promise<void>;
   handleEditTask: (task: TaskProps) => Promise<void>;
   handleDeleteTask: (taskId: string) => Promise<void>;
-  handleDragStart: (e: React.DragEvent, task: TaskProps) => void;
-  handleDragOver: (e: React.DragEvent) => void;
-  handleDrop: (
-    e: React.DragEvent,
-    containerStatus: ColumnStatus
-  ) => Promise<void>;
 }
 const ColumnContext = createContext<ColumnContextType | undefined>(undefined);
 
@@ -112,14 +109,21 @@ export const ColumnProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       setLoading(true);
       await api.put(`/task/${updatedTask._id}`, updatedTask);
-      setColumns(
-        columns.map((column) => ({
+      setColumns((prevColumns) => {
+        const newColumns = prevColumns.map((column) => ({
           ...column,
-          tasks: column.tasks.map((task) =>
-            task._id === updatedTask._id ? updatedTask : task
-          ),
-        }))
-      );
+          tasks: column.tasks.filter((task) => task._id !== updatedTask._id),
+        }));
+
+        const targetColumn = newColumns.find(
+          (column) => column.status === updatedTask.status
+        );
+        if (targetColumn) {
+          targetColumn.tasks.push(updatedTask);
+        }
+
+        return newColumns;
+      });
     } catch (error) {
       console.error("Error editing task:", error);
     } finally {
@@ -143,60 +147,15 @@ export const ColumnProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const handleDragStart = (e: React.DragEvent, task: TaskProps) => {
-    console.log(task._id);
-    e.dataTransfer.setData("taskId", task._id);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = async (
-    e: React.DragEvent,
-    containerStatus: ColumnStatus
-  ) => {
-    const taskId = e.dataTransfer.getData("taskId");
-
-    const task = columns
-      .flatMap((col) => col.tasks)
-      .find((t) => t._id === taskId);
-
-    if (task) {
-      if (task.status === containerStatus) return;
-      try {
-        setLoading(true);
-        const updatedTask = { ...task, status: containerStatus };
-        await api.put(`/task/${taskId}`, updatedTask);
-        setColumns(
-          columns.map((column) => ({
-            ...column,
-            tasks:
-              column.status === containerStatus
-                ? [...column.tasks, updatedTask]
-                : column.tasks.filter((t) => t._id !== taskId),
-          }))
-        );
-      } catch (error) {
-        console.error("Error moving task:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
   return (
     <ColumnContext.Provider
       value={{
         columns,
-
+        setColumns,
         loading,
         handleAddTask,
         handleEditTask,
         handleDeleteTask,
-        handleDragOver,
-        handleDragStart,
-        handleDrop,
       }}
     >
       {children}
@@ -210,5 +169,3 @@ export const useTask = () => {
   }
   return context;
 };
-export { ColumnStatus };
-

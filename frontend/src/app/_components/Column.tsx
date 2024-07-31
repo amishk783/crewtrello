@@ -4,13 +4,15 @@ import { Task, TaskProps } from "./Task";
 import Button from "./Button";
 import { Loader, Plus } from "lucide-react";
 import { useTask } from "../providers/TaskProvider";
-import { ColumnStatus } from "../providers/TaskProvider"; // Import the ColumnStatus type
+import { ColumnStatus } from "../providers/TaskProvider/type"; // Import the ColumnStatus type
 import SkeletonTask from "./SkeletonTask";
+import { useDnD } from "../providers/DndProvider";
+import { cn } from "../_utils";
 
 interface ColumnType {
   tasks: TaskProps[];
   title: string;
-  handleTaskForm: (status: ColumnStatus) => void; // Update the type of handleTaskForm argument
+  handleTaskForm: (status: string) => void;
 }
 
 export const Column: React.FC<ColumnType> = ({
@@ -18,17 +20,19 @@ export const Column: React.FC<ColumnType> = ({
   title,
   handleTaskForm,
 }) => {
-  const { handleDragOver, handleDrop, loading } = useTask();
+  const { handleDragOver, handleDragLeave, handleDrop } = useDnD();
 
   const onDragOver = useCallback(
     (e: React.DragEvent) => {
-      handleDragOver(e);
+      e.preventDefault();
+      handleDragOver(e, title as ColumnStatus);
     },
-    [handleDragOver]
+    [handleDragOver, title]
   );
 
   const onDrop = useCallback(
     (e: React.DragEvent) => {
+      e.preventDefault();
       handleDrop(e, title as ColumnStatus);
     },
     [handleDrop, title]
@@ -36,26 +40,23 @@ export const Column: React.FC<ColumnType> = ({
 
   return (
     <div
-      className="mx-4 my-2  w-full"
+      className={cn("mx-4 my-2  w-full")}
       onDragOver={onDragOver}
-      onDrop={onDrop} // Cast title to ColumnStatus
+      onDragLeave={handleDragLeave}
+      onDrop={onDrop}
     >
-      {loading && <Loader className=" animate-spin" size={42} />}
       <div className="flex justify-between mb-3 ">
         <h2 className="text-2xl text-zinc-500 font-normal">{title}</h2>
         <Image src="/framebar.png" width={24} height={24} alt="bar" />
       </div>
+
       <div className="flex flex-col gap-4">
-        {loading
-          ? Array(5)
-              .fill(null)
-              .map((_, i) => <SkeletonTask key={i} />)
-          : tasks.map((task, index) => {
-              return <Task key={index} {...task} />;
-            })}
+        {tasks.map((task) => (
+          <Task key={task._id} {...task} />
+        ))}
       </div>
       <Button
-        onClick={() => handleTaskForm(title as ColumnStatus)} // Cast title to ColumnStatus
+        onClick={() => handleTaskForm(title as ColumnStatus)}
         className="mt-4 flex w-full rounded-lg items-center justify-between text-white gap-2 pl-2  bg-gradient-to-b from-slate-800 to-gray-900 border-gray-900 border-2"
       >
         <p className="text-xl font-medium font-inter">Add new</p>

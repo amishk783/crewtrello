@@ -45,8 +45,9 @@ export const registerController = async (req: Request, res: Response) => {
     const session = new Session({ userId: newUser._id, refreshToken });
 
     const user = await newUser.save();
+    Logger.silly("User created Successfully");
     res.status(200).json({
-      message: "User created succesfully",
+      message: "User created successfully",
       session: { refreshToken: session.refreshToken, accessToken: accessToken },
       user: { email: user.email, username: user.username },
     });

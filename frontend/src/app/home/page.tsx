@@ -8,38 +8,31 @@ import { Sidebar } from "../_components/Sidebar";
 import { CircleHelp, Loader2, Search, SearchCheckIcon } from "lucide-react";
 import { cardItems, columnItems } from "../constant";
 import Button from "../_components/Button";
-import { DragDropContext } from "react-beautiful-dnd";
-import { Column } from "../_components/Column";
+
 import { CreateTask } from "../_components/CreateTask";
-import { useTask } from "../providers/TaskProvider";
-import { Task } from "../_components/Task";
+import { ColumnProvider, useTask } from "../providers/TaskProvider";
+
 import Kanbanboard from "../_components/Kanbanboard";
 
 const Home = () => {
   const [openCreateTask, setOpenCreateTask] = useState<boolean>(false);
   const [colStatus, setColStatus] = useState<string>("");
 
-  const { columns, loading } = useTask();
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center bg-black w-full h-screen">
-        <Loader2 size={42} className="animate-spin" />
-      </div>
-    );
-  }
-
   const handleTaskForm = (status: string) => {
     setColStatus(status);
     setOpenCreateTask((prev) => !prev);
   };
-  console.log(loading);
-
+  const closeCreateTask = () => {
+    setOpenCreateTask(false);
+  };
 
   return (
-    <div className="flex h-screen ">
-      <Sidebar className="w-[20%]" />
-      <div className="w-full bg-[#F4F4F4] text-black">
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar
+        className="w-[20%] flex-shrink-0 overflow-y-auto"
+        handleTaskForm={handleTaskForm}
+      />
+      <div className="w-full bg-[#F4F4F4] flex-grow overflow-auto text-black pb-10">
         <div className="flex flex-col gap-4 ml-4 my-6 mr-10">
           <div className="flex justify-between items-center ">
             <h2 className="text-black text-5xl font-barlow font-semibold">
@@ -56,7 +49,7 @@ const Home = () => {
                 key={index}
                 className="flex gap-4 bg-white h-32 items-center justify-center p-4 rounded-lg"
               >
-                <Image src={item.npm i --save-dev @types/react-beautiful-dndimageUrl} alt="icon" width={77} height={77} />
+                <Image src={item.imageUrl} alt="icon" width={77} height={77} />
                 <div className="flex flex-col">
                   <h5 className=" text-primary font-medium text-base">
                     {item.title}
@@ -128,31 +121,16 @@ const Home = () => {
               </Button>
             </div>
           </div>
-
-          {/* <div className="grid grid-cols-4 gap-4 w-full rounded-lg bg-white justify-between ">
-            {columns.map((column) => (
-              <div key={column.status}>
-                <div key={column.status}>
-                  <Column
-                    tasks={column.tasks}
-                    title={column.status}
-                    handleTaskForm={handleTaskForm}
-                  ></Column>
-                </div>
-              </div>
-            ))}
-          </div> */}
-        
-            <Kanbanboard/>
-          
+          <ColumnProvider>
+            <Kanbanboard
+              handleTaskForm={handleTaskForm}
+              openCreateTask={openCreateTask}
+              colStatus={colStatus}
+              closeCreateTask={closeCreateTask}
+            />
+          </ColumnProvider>
         </div>
       </div>
-      {openCreateTask && (
-        <CreateTask
-          taskStatus={colStatus}
-          onClose={() => setOpenCreateTask((prev) => !prev)}
-        />
-      )}
     </div>
   );
 };

@@ -5,18 +5,32 @@ import Button from "./Button";
 import Link from "next/link";
 import { dashboardItems } from "../constant";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "../_utils";
+import { useAuth } from "../providers/AuthProvider";
+import toast from "react-hot-toast";
 
 interface Props {
   className?: string;
+  handleTaskForm: (status: string) => void;
 }
 
-export const Sidebar: React.FC<Props> = ({ className }) => {
+export const Sidebar: React.FC<Props> = ({ className, handleTaskForm }) => {
   const pathname = usePathname();
+  const router = useRouter();
 
   const isActivePage = (path: string): boolean => {
     return path === pathname;
+  };
+  const { logOut } = useAuth();
+  const handleLogOut = async () => {
+    try {
+      await logOut();
+      router.push("/login");
+      toast.success("See you again!");
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
   };
   return (
     <div className={cn(" border-orange-500", className)}>
@@ -45,7 +59,10 @@ export const Sidebar: React.FC<Props> = ({ className }) => {
                   alt="notifaction alert"
                 />
               </div>
-              <Button className=" h-10 bg-zinc-100 text-primary">
+              <Button
+                onClick={handleLogOut}
+                className=" h-10 bg-zinc-100 text-primary"
+              >
                 Logout
               </Button>
             </div>
@@ -74,8 +91,11 @@ export const Sidebar: React.FC<Props> = ({ className }) => {
                 </Link>
               ))}
             </div>
-            <Button className=" flex w-full rounded-lg text-xl font-medium items-center justify-center text-white gap-2 pl-2 font-barlow bg-gradient-to-b from-[#4C38C2] via-purple-indigo to-[#2F2188] border-[#2F2188] border-2">
-              Create new task{" "}
+            <Button
+              className=" flex w-full rounded-lg text-xl font-medium items-center justify-center text-white gap-2 pl-2 font-barlow bg-gradient-to-b from-[#4C38C2] via-purple-indigo to-[#2F2188] border-[#2F2188] border-2"
+              onClick={() => handleTaskForm("To Do")}
+            >
+              Create new task
               <Image
                 src="/dashboard/frameplus.png"
                 alt="button icon"

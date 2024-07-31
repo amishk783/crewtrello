@@ -29,7 +29,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${barlow.variable} ${inter.variable}`}>
         <AuthProvider>
-          <ColumnProvider>{children}</ColumnProvider>
+         
+            <div id="myportal" />
+            {children}
+       
           <Toaster />
         </AuthProvider>
       </body>
