@@ -50,6 +50,7 @@ export const CreateTask: React.FC<Props> = ({ taskStatus, onClose }) => {
         ? priorityRef.current?.value
         : "";
     console.log("🚀 ~ priority:", priority);
+
     handleAddTask({ status, priority, ...data });
     onClose();
   };
@@ -131,7 +132,15 @@ export const CreateTask: React.FC<Props> = ({ taskStatus, onClose }) => {
                     />
                     <h2 className="text-primary font-inter">Deadline</h2>
                   </div>
-                  <div>not selected</div>
+                  <Input
+                    register={register}
+                    error={errors.description}
+                    label="deadline"
+                    type="text"
+                    className="text-primary font-inter bg-white focus:bg-white"
+                    placeholder="22-06-2022"
+                    name="deadline"
+                  />
                 </div>
                 <div className="flex gap-14">
                   <div className="flex items-center gap-4">

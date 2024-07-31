@@ -54,10 +54,9 @@ export const ColumnProvider: React.FC<{ children: React.ReactNode }> = ({
           authorization: `Bearer ${accessToken}`,
         },
       });
-      console.log(session, response.data);
+
       const tasks: TaskProps[] = response.data || [];
-      console.log("tasks", tasks);
-      console.log("before", columns);
+
       setColumns(
         columns.map((column) => ({
           ...column,
@@ -77,6 +76,7 @@ export const ColumnProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(true);
       console.log(data);
       let { title, status, description, priority, deadline } = data;
+      console.log("🚀 ~ handleAddTask ~ deadline:", deadline);
       const payload = {
         title,
         status,
@@ -84,10 +84,11 @@ export const ColumnProvider: React.FC<{ children: React.ReactNode }> = ({
         ...(priority && { priority }),
         ...(deadline && { deadline }),
       };
+      console.log(payload);
+      console.log("🚀 ~ handleAddTask ~ deadline:", deadline);
       const response = await api.post("/task/", payload);
 
       const newTask: TaskProps = response.data.savedTask;
-      console.log("🚀 ~ handleAddTask ~ newTask:", newTask);
 
       setColumns((prevColumns) =>
         prevColumns.map((column) =>

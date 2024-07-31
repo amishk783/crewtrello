@@ -10,6 +10,7 @@ import {
   parseISO,
   formatDistanceToNow,
   differenceInHours,
+  isValid,
 } from "date-fns";
 import { Modal } from "./Modal";
 import { EditTask } from "./EditTask";
@@ -35,7 +36,11 @@ export const Task: React.FC<TaskProps> = (task) => {
   let formattedDate;
   if (task.deadline) {
     const date = parseISO(task.deadline);
-    formattedDate = format(date, "MMMM d, yyyy");
+    if (isValid(date)) {
+      formattedDate = format(date, "MMMM d, yyyy");
+    } else {
+      console.error("Invalid date:", task.deadline);
+    }
   }
   const getTimeElapsed = () => {
     if (!task.createdAt) return;

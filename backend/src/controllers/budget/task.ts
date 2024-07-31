@@ -8,7 +8,6 @@ import { z } from "zod";
 
 export const createTask = async (req: AuthenticatedRequest, res: Response) => {
   console.log(req.body);
-
   const validatedData = taskSchema.parse(req.body);
 
   const user = req.user;

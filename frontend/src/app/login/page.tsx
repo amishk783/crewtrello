@@ -46,10 +46,13 @@ const Login = () => {
     try {
       await logIn(email, password);
       router.push("/");
-      toast("Hey, Missed You!", {
+      toast.success("Hey, Missed You!", {
         className: " text-green-300",
       });
     } catch (error) {
+      toast.error("Something went wrong!", {
+        className: " text-green-300",
+      });
       console.log(error);
     }
     setLoading(false);
