@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-
+import { useAuth } from "../providers/AuthProvider";
 interface Props {
   src?: string;
   width?: number;
@@ -10,6 +10,8 @@ interface Props {
 }
 
 export const Avatar = () => {
+  const { user } = useAuth();
+  const username = user?.username || "Joe Gardner";
   return (
     <div className="flex  gap-4 items-center py-4">
       <Image
@@ -18,7 +20,7 @@ export const Avatar = () => {
         height={31}
         alt="avatar icon"
       />
-      <h2 className="text-black text-xl">Joe Gardner</h2>
+      <h2 className="text-black text-xl">{username}</h2>
     </div>
   );
 };

@@ -1,9 +1,8 @@
 "use client";
 import axios from "axios";
 import { refreshToken } from "../refreshToken";
-import { useAuth } from "@/app/providers/AuthProvider";
 
-const baseURL = process.env.BACKEND_URL || "http://localhost:5000";
+const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
 const axiosInstance = axios.create({
   baseURL,

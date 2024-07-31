@@ -1,7 +1,7 @@
 "use client";
 import React, { ReactNode, useContext, useEffect, useState } from "react";
 import { createContext } from "react";
-import axios from "axios";
+
 import api from "../../_utils/api/axios";
 import { Session, User } from "./type";
 
@@ -92,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.setItem("session", JSON.stringify(response.data.session));
       localStorage.setItem("user", JSON.stringify(response.data.user));
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("Sign up failed:", error);
       throw error;
     }
   };

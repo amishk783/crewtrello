@@ -1,18 +1,18 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 
 import { Sidebar } from "../_components/Sidebar";
 
-import { CircleHelp, Loader2, Search, SearchCheckIcon } from "lucide-react";
+import { CircleHelp } from "lucide-react";
 import { cardItems, columnItems } from "../constant";
 import Button from "../_components/Button";
 
-import { CreateTask } from "../_components/CreateTask";
 import { ColumnProvider, useTask } from "../providers/TaskProvider";
 
 import Kanbanboard from "../_components/Kanbanboard";
+import { useAuth } from "../providers/AuthProvider";
 
 const Home = () => {
   const [openCreateTask, setOpenCreateTask] = useState<boolean>(false);
@@ -26,6 +26,8 @@ const Home = () => {
     setOpenCreateTask(false);
   };
 
+  const { user } = useAuth();
+  const userFirstName = user?.username.split(" ")[0];
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar
@@ -36,7 +38,7 @@ const Home = () => {
         <div className="flex flex-col gap-4 ml-4 my-6 mr-10">
           <div className="flex justify-between items-center ">
             <h2 className="text-black text-5xl font-barlow font-semibold">
-              Good morning, Joe
+              Good morning, {userFirstName}
             </h2>
             <div className="flex gap-4 ">
               <h3 className="font-inter">Help & feedback</h3>
