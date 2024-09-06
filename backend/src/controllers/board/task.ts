@@ -17,6 +17,7 @@ export const createTask = async (req: AuthenticatedRequest, res: Response) => {
       ...validatedData,
       list_id: validatedData.listId,
       user_id: user as string,
+      board_id: validatedData.boardId,
     });
     const savedTask = await newTask.save();
 
@@ -32,10 +33,11 @@ export const createTask = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 export const getAllTasks = async (req: AuthenticatedRequest, res: Response) => {
-  const { listId } = req.body;
+  const { boardId } = req.query;
+  console.log("🚀 ~ getAllTasks ~ board:", boardId);
   try {
-    const tasks = await Task.find({ user_id: req.user, list_id: listId });
-    console.log("🚀 ~ getAllTasks ~ tasks:", tasks)
+    const tasks = await Task.find({ user_id: req.user, board_id: boardId });
+    console.log("🚀 ~ getAllTasks ~ tasks:", tasks);
     res.json(tasks);
   } catch (error) {
     Logger.error("Error in getAllTasks:", error);
@@ -59,14 +61,15 @@ export const getTaskById = async (req: AuthenticatedRequest, res: Response) => {
 
 export const updateTask = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { id } = req.params;
     const validateData = updateTaskSchema.parse(req.body);
+   
 
     const updatedTask = await Task.findOneAndUpdate(
-      { _id: id, user_id: req.user },
-      validateData,
+      { _id: validateData._id, user_id: req.user },
+      { ...validateData, list_id: validateData.listId },
       { new: true, runValidators: true }
     );
+    
     if (!updatedTask) {
       return res.status(404).json({ message: "Task not found" });
     }

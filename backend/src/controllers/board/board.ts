@@ -10,6 +10,7 @@ export const createBoard = async (req: AuthenticatedRequest, res: Response) => {
     const validateData = boardScehma.parse(req.body);
 
     const user = req.user;
+    console.log("🚀 ~ createBoard ~ user:", user);
     const newBoard = new Board({
       ...validateData,
       user_id: user,
@@ -51,8 +52,10 @@ export const getAllBoards = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
+ 
   try {
     const boards = await Board.find({ user_id: req.user });
+    console.log("🚀 ~ boards:", boards);
     res.json(boards);
   } catch (error) {
     Logger.error("Error in getAllTasks:", error);

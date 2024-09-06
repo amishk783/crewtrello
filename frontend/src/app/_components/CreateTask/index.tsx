@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,47 +12,83 @@ import { useTask } from "@/app/providers/TaskProvider";
 import { Plus } from "lucide-react";
 import { ExtendedFormData, Option } from "./type";
 import { priorityOption, statusOption } from "./constant";
+import { createCard } from "@/app/_utils/api/card";
+import { useBoard } from "@/app/providers/BoardProvider";
+import { Card } from "../../../../typings";
+import { erroMessageHandler } from "@/app/_utils";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   deadline: z.string().optional(),
+  status: z.string().optional(),
 });
 
 export type formData = z.infer<typeof schema>;
 
 interface Props {
-  taskStatus: string;
+  listId: string;
+  boardId: string;
   onClose: () => void;
 }
-export const CreateTask: React.FC<Props> = ({ taskStatus, onClose }) => {
+export const CreateTask: React.FC<Props> = ({ onClose, listId, boardId }) => {
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm<formData>({ resolver: zodResolver(schema) });
-
-  const { handleAddTask } = useTask();
+  const { currentBoard, setBoardState } = useBoard();
 
   const onSelectChange = () => (selectedOption: Option | null) => {
     console.log("Selected option:", selectedOption);
   };
-
+  const taskStatus = "To do";
   const statusRef = React.useRef<HTMLInputElement>(null);
   const priorityRef = React.useRef<HTMLInputElement>(null);
 
   const handleForm = async (data: ExtendedFormData) => {
-    event?.preventDefault();
-    const status = statusRef.current?.value || "";
-    console.log("🚀 ~ status:", status);
-    const priority =
-      priorityRef.current?.value !== "Not Selected"
-        ? priorityRef.current?.value
-        : "";
-    console.log("🚀 ~ priority:", priority);
+    try {
+      const status = statusRef.current?.value || "";
+      console.log("🚀 ~ status:", status);
+      const priority =
+        priorityRef.current?.value !== "Not Selected"
+          ? priorityRef.current?.value
+          : "";
 
-    handleAddTask({ status, priority, ...data });
-    onClose();
+      const response = await createCard({
+        ...data,
+        ...(status && { status: "in do" }),
+        listId,
+        boardId,
+      });
+      const savedCard: Card = (response as { savedTask: Card }).savedTask;
+
+      const newCard = {
+        _id: savedCard._id,
+        title: savedCard.title,
+        status: savedCard.status,
+        description: savedCard.description,
+        priority: savedCard.priority,
+        deadline: savedCard.deadline,
+        createdAt: savedCard.createdAt,
+        list_id: savedCard.list_id,
+      };
+
+      const newColumns = new Map(currentBoard.lists);
+      const currentList = newColumns.get(listId);
+      if (currentList) {
+        const updatedCards = [...currentList.cards, newCard];
+        newColumns.set(listId, {
+          ...currentList,
+          cards: updatedCards,
+        });
+      }
+      setBoardState({ ...currentBoard, lists: newColumns });
+      onClose();
+      
+    } catch (error) {
+      erroMessageHandler(error);
+    }
   };
 
   const handleEnlarge = () => {};

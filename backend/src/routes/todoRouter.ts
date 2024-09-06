@@ -12,7 +12,7 @@ const router = express.Router();
 router.post("/", createTask);
 router.get("/", getAllTasks);
 router.get("/:id", getTaskById);
-router.put("/:id", updateTask);
+router.put("/", updateTask);
 router.delete("/:id", deleteTask);
 
 export const todoRouter = router;

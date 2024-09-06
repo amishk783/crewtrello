@@ -33,7 +33,7 @@ export const Sidebar: React.FC<Props> = ({ className, handleTaskForm }) => {
       toast.error("Something went wrong");
     }
   };
- 
+
   return (
     <div className={cn(" border-orange-500", className)}>
       <div className="flex flex-col px-2 justify-between h-full">

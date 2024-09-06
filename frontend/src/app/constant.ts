@@ -15,17 +15,17 @@ export const dashboardItems: DashboardItemType[] = [
   {
     imageUrl: "/dashboard/frameboard.png",
     text: "Boards",
-    pathUrl: "boards",
+    pathUrl: "/boards",
   },
   {
     imageUrl: "/dashboard/framesettings.png",
     text: "Settings",
-    pathUrl: "app/users",
+    pathUrl: "/users",
   },
   {
     imageUrl: "/dashboard/frameteam.png",
     text: "Teams",
-    pathUrl: "app/budget",
+    pathUrl: "/teams",
   },
   {
     imageUrl: "/dashboard/frameanalytics.png",

@@ -13,5 +13,7 @@ const axiosInstance = axios.create({
     "Content-type": "application/json",
   },
 });
+
+
 const api = axiosInstance;
 export default api;

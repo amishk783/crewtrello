@@ -13,8 +13,6 @@ import api from "../../_utils/api/axios";
 import { ColumnStatus, ColumnType } from "./type";
 import { ExtendedFormData } from "@/app/_components/CreateTask/type";
 import { useAuth } from "../AuthProvider";
-import { DragEndEvent } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 
 interface ColumnContextType {
   columns: ColumnType[];

@@ -26,6 +26,7 @@ const taskSchema = new Schema({
     required: false,
   },
   list_id: { type: Schema.Types.ObjectId, ref: "List" },
+  board_id: { type: Schema.Types.ObjectId, ref: "Board" },
   user_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
   createdAt: {
     type: Date,

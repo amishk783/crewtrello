@@ -5,7 +5,6 @@ import { createContext } from "react";
 import api from "../../_utils/api/axios";
 import { Session, User } from "./type";
 
-
 interface AuthContextProps {
   user?: User | null;
   session: Session | null;
@@ -34,13 +33,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     checkSession();
   }, []);
+
   useEffect(() => {
     if (session) {
       api.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${session.accessToken}`;
-    } else {
-      delete api.defaults.headers.common["Authorization"];
+      console.log(
+        "Authorization header after setting:",
+        api.defaults.headers.common["Authorization"]
+      );
     }
   }, [session]);
 
@@ -55,6 +57,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setSession(parsedSession);
 
         setUser(parsedUser);
+        console.log(
+          "Authorization header:",
+          api.defaults.headers.common["Authorization"]
+        );
+        api.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${parsedSession.accessToken}`;
       }
     } catch (error) {
       console.error("Session check failed:", error);

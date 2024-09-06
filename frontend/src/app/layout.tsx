@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 import { AuthProvider } from "./providers/AuthProvider";
 import { ColumnProvider } from "./providers/TaskProvider";
 import { Toaster } from "react-hot-toast";
+import BoardProvider from "./providers/BoardProvider";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,10 +30,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${barlow.variable} ${inter.variable}`}>
         <AuthProvider>
-         
+          <BoardProvider>
             <div id="myportal" />
             {children}
-       
+          </BoardProvider>
+
           <Toaster />
         </AuthProvider>
       </body>

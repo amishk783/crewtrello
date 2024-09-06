@@ -5,12 +5,12 @@ import { cn } from "@/app/_utils";
 type Props = {
   name: string;
   label: string;
-
+  variant?: "normal" | "textarea";
   register: UseFormRegister<FieldValues & any>;
   required?: boolean;
   className?: string;
   placeholder?: string;
-
+  onBlur?: () => void;
   error: any;
   type?: "text" | "number" | "password" | "email";
   validate?: (value: string) => boolean | string;
@@ -18,7 +18,7 @@ type Props = {
 
 export const Input: React.FC<Props> = ({
   name,
-
+  variant = "normal",
   required,
   register,
   className,
@@ -29,19 +29,35 @@ export const Input: React.FC<Props> = ({
 }) => {
   return (
     <div className="w-full">
-      <input
-        className={cn(
-          error ? "bg-red-50 border-red-200 border-2" : "bg-zinc-200",
-          "w-full h-1 py-7 px-4 focus:outline-none focus:border-0  focus:bg-blue-100 shadow-sm  rounded-md ",
-          className
-        )}
-        placeholder={placeholder}
-        {...{ type }}
-        {...register(name, {
-          required,
-          validate,
-        })}
-      />
+      {variant === "normal" ? (
+        <input
+          className={cn(
+            error ? "bg-red-50 border-red-200 border-2" : "bg-zinc-200",
+            "w-full h-1 py-7 px-4 focus:outline-none focus:border-0  focus:bg-blue-100 shadow-sm  rounded-md ",
+            className
+          )}
+          placeholder={placeholder}
+          {...{ type }}
+          {...register(name, {
+            required,
+            validate,
+          })}
+        />
+      ) : (
+        <textarea
+          className={cn(
+            error ? "bg-red-50 border-red-200 border-2" : "bg-zinc-200",
+            "w-full h-1 py-7 px-4 focus:outline-none focus:border-0  focus:bg-blue-100 shadow-sm  rounded-md ",
+            className
+          )}
+          placeholder={placeholder}
+          {...{ type }}
+          {...register(name, {
+            required,
+            validate,
+          })}
+        ></textarea>
+      )}
       {error && (
         <div className=" text-sm mt-2 text-red-400">
           {!error?.message && error?.type === "required"

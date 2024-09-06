@@ -7,10 +7,8 @@ import Logger from "@/utils/logger";
 import { z } from "zod";
 
 export const createList = async (req: AuthenticatedRequest, res: Response) => {
-  console.log("reqbody", req.body);
   const validateData = listValidationSchema.parse({
     ...req.body,
-    boardId: req.body.board_id,
   });
   console.log(validateData.boardId);
   try {
@@ -33,10 +31,11 @@ export const createList = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 export const getAllList = async (req: AuthenticatedRequest, res: Response) => {
-  const { id: boardId } = req.body;
+  const { boardId } = req.query;
+  console.log("🚀 ~ getAllList ~ boardId:", boardId);
   try {
     const lists = await List.find({ board_id: boardId });
-    console.log();
+
     res.json(lists);
   } catch (error) {
     Logger.error("Error in getAllList:", error);
@@ -45,10 +44,10 @@ export const getAllList = async (req: AuthenticatedRequest, res: Response) => {
 };
 export const getListById = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { id } = req.params;
-    const { boardId } = req.body;
+    const { ListId, boardId } = req.query;
+
     console.log("🚀 ~ getListById ~ boardId:", boardId);
-    const list = await List.findOne({ _id: id, board_id: boardId });
+    const list = await List.findOne({ _id: ListId, board_id: boardId });
     if (!list) {
       return res.status(404).json({ message: "List not found" });
     }
@@ -62,6 +61,7 @@ export const getListById = async (req: AuthenticatedRequest, res: Response) => {
 export const updateList = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
+    console.log("🚀 ~ updateList ~ id:", id);
     const validateData = listValidationSchema.parse(req.body);
 
     const updatedList = await List.findOneAndUpdate(
@@ -70,7 +70,7 @@ export const updateList = async (req: AuthenticatedRequest, res: Response) => {
       { new: true, runValidators: true }
     );
     if (!updatedList) {
-      return res.status(404).json({ message: "Listnot found" });
+      return res.status(404).json({ message: "List not found" });
     }
     res.json(updatedList);
   } catch (error) {
@@ -84,12 +84,12 @@ export const updateList = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 export const deleteList = async (req: AuthenticatedRequest, res: Response) => {
-  const { board_id } = req.body;
+  const { boardId, ListId } = req.query;
 
   try {
     const deletedList = await List.findOneAndDelete({
-      _id: req.params.id,
-      board_id,
+      _id: ListId,
+      board_id: boardId,
     });
     if (!deletedList) {
       return res.status(404).json({ message: "List not found" });

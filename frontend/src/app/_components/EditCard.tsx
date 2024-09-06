@@ -12,9 +12,12 @@ import { useTask } from "@/app/providers/TaskProvider";
 import { Plus } from "lucide-react";
 import { Option } from "./CreateTask/type";
 import { priorityOption, statusOption } from "./CreateTask/constant";
-import { TaskProps } from "./Task";
 
 import toast from "react-hot-toast";
+import { Card } from "../../../typings";
+import { updateCard } from "../_utils/api/card";
+import { useBoard } from "../providers/BoardProvider";
+import { erroMessageHandler } from "../_utils";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -25,20 +28,20 @@ const schema = z.object({
 export type formData = z.infer<typeof schema>;
 
 interface Props {
-  task: TaskProps;
+  card: Card;
   onClose: () => void;
 }
-export const EditTask: React.FC<Props> = ({ task, onClose }) => {
+export const EditCard: React.FC<Props> = ({ card, onClose }) => {
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm<formData>({
     resolver: zodResolver(schema),
-    defaultValues: { title: task.title, description: task.description },
+    defaultValues: { title: card.title, description: card.description },
   });
 
-  const { handleEditTask } = useTask();
+  const { currentBoard, setBoardState } = useBoard();
 
   const onSelectChange = () => (selectedOption: Option | null) => {
     console.log("Selected option:", selectedOption);
@@ -48,28 +51,44 @@ export const EditTask: React.FC<Props> = ({ task, onClose }) => {
   const priorityRef = React.useRef<HTMLInputElement>(null);
 
   const handleForm = async (data: formData) => {
-    event?.preventDefault();
+    console.log("asdkashdk");
     let status;
     if (!statusRef.current?.value) return;
 
-    status = statusRef.current?.value as TaskProps["status"];
+    status = statusRef.current?.value;
     const updatedPriority =
       priorityRef.current?.value !== "Not Selected"
         ? priorityRef.current?.value
         : "";
-    const priority = updatedPriority as TaskProps["priority"];
-    const payload: TaskProps = {
+    const priority = updatedPriority;
+    const payload = {
       ...data,
       status,
-      ...(priority && { priority }),
-      _id: task._id,
+      priority: priority as "Low" | "Medium" | "Urgent" | undefined,
+      _id: card._id,
+      listId: card.list_id,
+      createdAt: card.createdAt,
     };
+
     try {
-      await handleEditTask(payload);
+      const newCard: Card = (await updateCard(payload)) as Card;
+
+      const newColumns = new Map(currentBoard.lists);
+      const currentList = newColumns.get(card.list_id);
+      if (currentList) {
+        const updatedCards = currentList.cards.map((existingCard: Card) =>
+          existingCard._id === newCard._id ? newCard : existingCard
+        );
+        newColumns.set(card.list_id, {
+          ...currentList,
+          cards: updatedCards,
+        });
+      }
+      setBoardState({ ...currentBoard, lists: newColumns });
       toast.success("Task updated succesfully");
       onClose();
     } catch (error) {
-      toast.error("Something went wrong! please try again");
+      erroMessageHandler(error);
       onClose();
     }
   };
@@ -92,11 +111,11 @@ export const EditTask: React.FC<Props> = ({ task, onClose }) => {
                 <Selector
                   ref={statusRef}
                   {...statusOption}
-                  defaultValue={task.status}
+                  defaultValue={card.status}
                   onChange={onSelectChange}
                 ></Selector>
                 <Selector
-                  defaultValue={task.priority}
+                  defaultValue={card.priority}
                   ref={priorityRef}
                   {...priorityOption}
                   onChange={onSelectChange}
