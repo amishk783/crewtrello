@@ -11,12 +11,10 @@ import User from "@/db/schema/User";
 import config from "@/config";
 import Session from "@/db/schema/Session";
 import { z } from "zod";
+import Profile from "@/db/schema/Profile";
 
 export const registerController = async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
-    const { email } = req.body;
-    console.log(email);
     const validatedData = registerSchema.parse(req.body);
 
     const exisitngUser = await User.findOne({ email: validatedData.email });
@@ -26,11 +24,23 @@ export const registerController = async (req: Request, res: Response) => {
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(validatedData.password, salt);
-    const newUser = new User({
+
+    const newUser = await new User({
       username: validatedData.username,
       email: validatedData.email,
       hashedPassword,
     });
+
+    const newProfile = new Profile({
+      user_id: newUser._id,
+      name: newUser.username,
+      email: newUser.email,
+    });
+
+    const user = await newUser.save();
+
+    await newProfile.save();
+
     const accessToken = jwt.sign(
       { userId: newUser._id },
       config.accessTokenSecret,
@@ -44,12 +54,11 @@ export const registerController = async (req: Request, res: Response) => {
 
     const session = new Session({ userId: newUser._id, refreshToken });
 
-    const user = await newUser.save();
     Logger.silly("User created Successfully");
     res.status(200).json({
       message: "User created successfully",
       session: { refreshToken: session.refreshToken, accessToken: accessToken },
-      user: { email: user.email, username: user.username },
+      profile: { ...newProfile._doc },
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

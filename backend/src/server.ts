@@ -10,11 +10,13 @@ import Logger from "./utils/logger";
 import { verifyUser } from "./middleware/verifyUser";
 const app = express();
 
-import { todoRouter } from "./routes/todoRouter";
+import { todoRouter } from "./routes/cardRouter";
 import { authRouter } from "./routes/authRouters";
 import { boardRouter } from "./routes/boardRouter";
 import { main } from "./db";
 import { listRouter } from "./routes/listRouter";
+import { profileRouter } from "./routes/profileRouter";
+import { workspaceRouter } from "./routes/workspaceRouter";
 
 if (config.nodeEnv === "production") {
   app.use(helmet());
@@ -31,7 +33,9 @@ if (config.nodeEnv !== "test") {
 // app.use(config.apiBasePath);
 
 app.use("/auth", authRouter);
+app.use("/profile", verifyUser, profileRouter);
 app.use("/task", verifyUser, todoRouter);
+app.use("/workspace", verifyUser, workspaceRouter);
 app.use("/board", verifyUser, boardRouter);
 app.use("/list", verifyUser, listRouter);
 

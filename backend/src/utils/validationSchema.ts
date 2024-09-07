@@ -37,6 +37,7 @@ export const updateTaskSchema = z.object({
 
 export const boardScehma = z.object({
   name: z.string().min(1, "Board name is required"),
+  workspaceId: z.string().min(1, "Workspace Id is required"),
 });
 
 export const listValidationSchema = z.object({
@@ -49,4 +50,25 @@ export const updatedListValidationSchema = z.object({
   position: z.number().optional(),
   boardId: z.string().min(1, "Board Id is required"),
   listId: z.string().min(1, "List Id is required"),
+});
+
+export const profileValidationSchema = z.object({
+  name: z.string().optional(),
+  avatar: z.number().optional(),
+  bio: z.string().optional(),
+  company: z.string().optional(),
+  jobTitle: z.string().optional(),
+  location: z.string().optional(),
+  socialLinks: z
+    .object({
+      linkedin: z.string().url().optional(),
+      twitter: z.string().url().optional(),
+      github: z.string().url().optional(),
+    })
+    .optional(),
+});
+
+export const workspaceValidationSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
 });

@@ -5,17 +5,17 @@ import { listValidationSchema } from "@/utils/validationSchema";
 import List from "@/db/schema/List";
 import Logger from "@/utils/logger";
 import { z } from "zod";
+import Profile from "@/db/schema/Profile";
 
 export const createList = async (req: AuthenticatedRequest, res: Response) => {
   const validateData = listValidationSchema.parse({
     ...req.body,
   });
-  console.log(validateData.boardId);
+
   try {
     const newList = new List({
       board_id: validateData.boardId,
       ...validateData,
-      user: req.user,
     });
     const savedList = await newList.save();
 
@@ -32,7 +32,7 @@ export const createList = async (req: AuthenticatedRequest, res: Response) => {
 };
 export const getAllList = async (req: AuthenticatedRequest, res: Response) => {
   const { boardId } = req.query;
-  console.log("🚀 ~ getAllList ~ boardId:", boardId);
+
   try {
     const lists = await List.find({ board_id: boardId });
 
@@ -61,7 +61,7 @@ export const getListById = async (req: AuthenticatedRequest, res: Response) => {
 export const updateList = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    console.log("🚀 ~ updateList ~ id:", id);
+
     const validateData = listValidationSchema.parse(req.body);
 
     const updatedList = await List.findOneAndUpdate(

@@ -1,15 +1,18 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "@/types";
-import { boardScehma } from "@/utils/validationSchema";
+import { workspaceValidationSchema } from "@/utils/validationSchema";
 import Board from "@/db/schema/Board";
 import Logger from "@/utils/logger";
 import { z } from "zod";
 import Profile from "@/db/schema/Profile";
 import Workspace from "@/db/schema/Workspace";
 
-export const createBoard = async (req: AuthenticatedRequest, res: Response) => {
+export const createWorkspace = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
-    const validateData = boardScehma.parse(req.body);
+    const validateData = workspaceValidationSchema.parse(req.body);
 
     const user = req.user;
 
@@ -17,37 +20,25 @@ export const createBoard = async (req: AuthenticatedRequest, res: Response) => {
       user_id: req.user,
     });
 
-    const workspace = await Workspace.findById(validateData.workspaceId);
-
-    if (!workspace) {
-      return res.status(404).json({ message: "Workspace not found" });
-    }
-
     if (!profile) {
       return res.status(404).json({ message: "Profile not found" });
     }
-    const newBoard = new Board({
+    const newWorkspace = await new Workspace({
       ...validateData,
-      profile_id: profile?._id,
-      workspace: validateData.workspaceId,
     });
 
-    newBoard.members.push({ memberId: profile._id, role: "admin" });
+    newWorkspace.members.push({ role: "admin", profile: profile._id });
 
-    const data = await newBoard.save();
+    const data = await newWorkspace.save();
 
-    workspace.boards.push({ board: newBoard._id });
-
-    await workspace.save();
-
-    Logger.silly("Board created succesfully");
-    res.status(201).json({ message: "Board created succesfully", data });
+    Logger.silly("Workspace created succesfully");
+    res.status(201).json({ message: "Workspace created succesfully", data });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      Logger.error("Validation error in createBoard:", error.errors);
+      Logger.error("Validation error in createWorkspace:", error.errors);
       return res.status(400).json({ errors: error.errors });
     }
-    Logger.error("Error in createBoard:", error);
+    Logger.error("Error in createWorkspace:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -107,7 +98,7 @@ export const updateBoard = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id: boardId } = req.params;
 
-    const validateData = boardScehma.parse(req.body);
+    const validateData = workspaceValidationSchema.parse(req.body);
 
     const profile = await Profile.findOne({
       user_id: req.user,
